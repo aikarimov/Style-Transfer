@@ -1,9 +1,11 @@
 close all
 nbins = 100;
 %file name
-FName = {'Levitan_flower','Seurat_flower','VanGogh_flower','Levitan_evening','Seurat_2','VanGogh_iris','VanGogh_house'};
+%FName = {'Levitan_flower','Seurat_flower','VanGogh_flower','Levitan_evening','Seurat_2','VanGogh_iris','VanGogh_house','VGH2'};
+FName = {'VanGogh_Chestnut','Seurat_Bridge','Levitan_Oak','F752','Seurat_Bridge_grad','Levitan_Oak_grad','VanGogh_Wheat'};
 %display name - add dates, correct names...
-Name = {'Levitan flower','Seurat flower','VanGogh flower','Levitan evening','Seurat Port','VanGogh iris','VanGogh house'};
+%Name = {'Levitan flower','Seurat flower','VanGogh flower','Levitan evening','Seurat Port','VanGogh iris','VanGogh house','VGH2'};
+Name = {'VanGogh Chestnut','Seurat Bridge','Levitan Oak','VanGogh Chestnut grad','Seurat Bridge grad','Levitan Oak grad','VanGogh Wheat'};
 nfiles = length(Name);
 nx = 3; ny = 3; %supltols
 fsize = 10; %font size
@@ -83,16 +85,17 @@ for n=1:nfiles
         osdnb(i) = std(nbsan(1:nbsnb(i))); %standard deviation of angles
     end
     
-    figure(10+1); %нарисуем гистограмму
+    figure(11); %нарисуем гистограмму длин
     subplot(nx,ny,n);
-    histogram(strokelengths,nbins);
+    histogram(strokelengths,nbins,"Normalization","probability","EdgeColor","none");
     title([Name{1,n}],'FontSize',fsize);
     xlabel('length, mm','FontSize',fsize);
     ylabel('count','FontSize',fsize);
-    xlim([0 12]);
-    ylim([0 1200]);
+    xlim([0 15]);
+    ylim([0 0.2]);
     grid on
     
+
 %     xline(mean(strokelengths),'-',{'Avarage'},'FontSize',fsize,'LineWidth',lwidth);
 %     xline(median(strokelengths),'-',{'Median'},'FontSize',fsize,'LineWidth',lwidth);
 
@@ -101,15 +104,17 @@ for n=1:nfiles
 
     legend('Data',['Average =',num2str(mean(strokelengths))], ['Median =',num2str(median(strokelengths))],'FontSize',fsizelegend)
     
-    figure(10+2); %нарисуем гистограмму
+    figure(12); %нарисуем гистограмму
     subplot(nx,ny,n);
-    histogram(broadness,nbins);
+    histogram(broadness,nbins,"Normalization","probability","EdgeColor","none");
     title([Name{1,n}],'FontSize',fsize);
     xlabel('width, mm','FontSize',fsize);
     ylabel('count','FontSize',fsize);
-    xlim([0.9 5]);
-    ylim([0 1800]);
+    xlim([3.9 7]);
+    ylim([0 0.2]);
     grid on
+
+    
 %     xline(mean(broadness),'-',{'Avarage'},'FontSize',fsize,'LineWidth',lwidth);
 %     xline(median(broadness),'-',{'Median'},'FontSize',fsize,'LineWidth',lwidth);
 
@@ -117,14 +122,14 @@ for n=1:nfiles
     xline(median(broadness),'-r','LineWidth',lwidth);
     legend('Data',['Average =',num2str(mean(broadness))], ['Median =',num2str(median(broadness))],'FontSize',fsizelegend)
     
-    figure(10+3); %нарисуем гистограмму
+    figure(13); %нарисуем гистограмму
     subplot(nx,ny,n);
-    histogram(elongatedness,nbins);
+    histogram(elongatedness,nbins,"Normalization","probability","EdgeColor","none");
     title([Name{1,n}],'FontSize',fsize);
     xlabel('elongatedness, mm','FontSize',fsize);
     ylabel('count','FontSize',fsize);
-    xlim([0 12]);
-    ylim([0 350]);
+    xlim([0 4]);
+    ylim([0 0.16]);
     grid on
 %     xline(mean(elongatedness),'-',{'Avarage'},'FontSize',fsize,'LineWidth',lwidth);
 %     xline(median(elongatedness),'-',{'Median'},'FontSize',fsize,'LineWidth',lwidth);
@@ -135,79 +140,93 @@ for n=1:nfiles
 
 
     %Orientation
-    figure(10+4);
+    figure(14);
     subplot(nx,ny,n);
-    histogram(angles,nbins);
+    h = histogram(angles,nbins,"Normalization","probability","EdgeColor","none");
+    polarplot(h.BinEdges([1:end-2,end]),h.Values,'LineWidth',lwidth);
+    title([Name{1,n}],'FontSize',fsize);
+    thetalim([-90; 90]);
+    rticks([0]);
+    thetaticks([-90,-45,0,45, 90]);
+    thetaticklabels({'-90';'-45';'0'; '45'; '90'});
+    grid on
+   
+
+    %Orientation histogram
+    figure(104);
+    subplot(nx,ny,n);
+    histogram(angles,nbins,"Normalization","probability","EdgeColor","none");
     title([Name{1,n}],'FontSize',fsize);
     xlabel('orientation, rad','FontSize',fsize);
     ylabel('count','FontSize',fsize);
     xlim([-pi/2 pi/2]);
-    ylim([0 700]);
+    ylim([0 0.1]);
     grid on
     xline(mean(angles),'--k','LineWidth',lwidth);
     xline(median(angles),'-r','LineWidth',lwidth);
     legend('Data',['Average =',num2str(mean(angles))], ['Median =',num2str(median(angles))],'FontSize',fsizelegend)
 
+
     %straightness
-    figure(10+5);
+    figure(15);
     subplot(nx,ny,n);
-    histogram(straightness,nbins);
+    histogram(straightness,nbins,"Normalization","probability","EdgeColor","none");
     title([Name{1,n}],'FontSize',fsize);
     xlabel('straightness','FontSize',fsize);
     ylabel('count','FontSize',fsize);
-    xlim([0 1]);
-    ylim([0 2000]);
+    xlim([0.4 1]);
+    ylim([0 0.2]);
     grid on
     xline(mean(straightness),'--k','LineWidth',lwidth);
     xline(median(straightness),'-r','LineWidth',lwidth);
     legend('Data',['Average =',num2str(mean(straightness))], ['Median =',num2str(median(straightness))],'FontSize',fsizelegend)
 
     %nbsnb
-    figure(10+6);
+    figure(16);
     subplot(nx,ny,n);
-    histogram(nbsnb,nbins);
+    histogram(nbsnb/M,nbins,"Normalization","probability","EdgeColor","none");
     title([Name{1,n}],'FontSize',fsize);
     xlabel('NBS-NB','FontSize',fsize);
     ylabel('count','FontSize',fsize);
-    xlim([0 5000]);
-    ylim([0 300]);
+    xlim([0.1 0.7]);
+    ylim([0 0.03]);
     grid on
     xline(mean(nbsnb),'--k','LineWidth',lwidth);
     xline(median(nbsnb),'-r','LineWidth',lwidth);
     legend('Data',['Average =',num2str(mean(nbsnb))], ['Median =',num2str(median(nbsnb))],'FontSize',fsizelegend)
 
     %nbsso
-    figure(10+7);
+    figure(17);
     subplot(nx,ny,n);
-    histogram(nbsso,nbins);
+    histogram(nbsso/M,nbins,"Normalization","probability","EdgeColor","none");
     title([Name{1,n}],'FontSize',fsize);
     xlabel('NBS-SO','FontSize',fsize);
     ylabel('count','FontSize',fsize);
-    xlim([0 2000]);
-    ylim([0 250]);
+    xlim([0 0.6]);
+    ylim([0 0.03]);
     grid on
     xline(mean(nbsso),'--k','LineWidth',lwidth);
     xline(median(nbsso),'-r','LineWidth',lwidth);
     legend('Data',['Average =',num2str(mean(nbsso))], ['Median =',num2str(median(nbsso))],'FontSize',fsizelegend)
 
     %osdnb
-    figure(10+8);
+    figure(18);
     subplot(nx,ny,n);
-    histogram(osdnb,nbins);
+    histogram(osdnb,nbins,"Normalization","probability","EdgeColor","none");
     title([Name{1,n}],'FontSize',fsize);
     xlabel('OSD-NB','FontSize',fsize);
     ylabel('count','FontSize',fsize);
-    xlim([0 1.2]);
-    ylim([0 400]);
+    xlim([0 1.4]);
+    ylim([0 0.04]);
     grid on
     xline(mean(osdnb),'--k','LineWidth',lwidth);
     xline(median(osdnb),'-r','LineWidth',lwidth);
     legend('Data',['Average =',num2str(mean(osdnb))], ['Median =',num2str(median(osdnb))],'FontSize',fsizelegend)
 
     %BH
-    figure(10+9);
+    figure(19);
     subplot(nx,ny,n);
-    histogram(BH,nbins);
+    histogram(BH,nbins,"Normalization","probability","EdgeColor","none");
     title([Name{1,n}],'FontSize',fsize);
     xlabel('BH','FontSize',fsize);
     ylabel('count','FontSize',fsize);
