@@ -1,16 +1,25 @@
 close all
 nbins = 100;
 %file name
-%FName = {'Levitan_flower','Seurat_flower','VanGogh_flower','Levitan_evening','Seurat_2','VanGogh_iris','VanGogh_house','VGH2'};
-FName = {'VanGogh_Chestnut','Seurat_Bridge','Levitan_Oak','F752','Seurat_Bridge_grad','Levitan_Oak_grad','VanGogh_Wheat'};
+FName = {'VanGogh_Lenna_Iris','Seurat_Lenna_Bridge','Levitan_Lenna_Oak','Lenna_grad'};
 %display name - add dates, correct names...
-%Name = {'Levitan flower','Seurat flower','VanGogh flower','Levitan evening','Seurat Port','VanGogh iris','VanGogh house','VGH2'};
-Name = {'VanGogh Chestnut','Seurat Bridge','Levitan Oak','VanGogh Chestnut grad','Seurat Bridge grad','Levitan Oak grad','VanGogh Wheat'};
+Name = {'Lenna (Van Gogh)','Lenna (Seurat)','Lenna (Levitan)','Lenna (Gradient)'};
 nfiles = length(Name);
-nx = 3; ny = 3; %supltols
+nx = 2; ny = 2; %supltols
 fsize = 10; %font size
 fsizelegend = 6; %font size for legend
 lwidth = 1; %line width for auxiliary lines
+
+markers = {'^','square','o','diamond'};
+
+%create matrices for correlation analysis
+
+clength = zeros(nbins,nfiles);
+cstraightness = zeros(nbins,nfiles);
+corientation = zeros(nbins,nfiles);
+cnbsnb = zeros(nbins,nfiles);
+cnbsso = zeros(nbins,nfiles);
+cosdnb = zeros(nbins,nfiles);
 
 for n=1:nfiles
     %xl.LabelVerticalAlignment = 'up';
@@ -84,78 +93,72 @@ for n=1:nfiles
         end
         osdnb(i) = std(nbsan(1:nbsnb(i))); %standard deviation of angles
     end
+
+    %normalization
+    nbsnb = nbsnb/M;
+    nbsso = nbsso/M;
+
     
     figure(11); %нарисуем гистограмму длин
     subplot(nx,ny,n);
-    histogram(strokelengths,nbins,"Normalization","probability","EdgeColor","none");
+    h = histogram(strokelengths,nbins,"Normalization","probability","EdgeColor","none");
+    clength(:,n) = (h.Values)';
     title([Name{1,n}],'FontSize',fsize);
     xlabel('length, mm','FontSize',fsize);
     ylabel('count','FontSize',fsize);
     xlim([0 15]);
     ylim([0 0.2]);
     grid on
-    
-
-%     xline(mean(strokelengths),'-',{'Avarage'},'FontSize',fsize,'LineWidth',lwidth);
-%     xline(median(strokelengths),'-',{'Median'},'FontSize',fsize,'LineWidth',lwidth);
-
     xline(mean(strokelengths),'--k','LineWidth',lwidth);
     xline(median(strokelengths),'-r','LineWidth',lwidth);
 
     legend('Data',['Average =',num2str(mean(strokelengths))], ['Median =',num2str(median(strokelengths))],'FontSize',fsizelegend)
     
-    figure(12); %нарисуем гистограмму
-    subplot(nx,ny,n);
-    histogram(broadness,nbins,"Normalization","probability","EdgeColor","none");
-    title([Name{1,n}],'FontSize',fsize);
-    xlabel('width, mm','FontSize',fsize);
-    ylabel('count','FontSize',fsize);
-    xlim([3.9 7]);
-    ylim([0 0.2]);
-    grid on
-
+%     figure(12); %нарисуем гистограмму
+%     subplot(nx,ny,n);
+%     histogram(broadness,nbins,"Normalization","probability","EdgeColor","none");
+%     title([Name{1,n}],'FontSize',fsize);
+%     xlabel('width, mm','FontSize',fsize);
+%     ylabel('count','FontSize',fsize);
+%     xlim([3.9 7]);
+%     ylim([0 0.2]);
+%     grid on
+%     xline(mean(broadness),'--k','LineWidth',lwidth);
+%     xline(median(broadness),'-r','LineWidth',lwidth);
+%     legend('Data',['Average =',num2str(mean(broadness))], ['Median =',num2str(median(broadness))],'FontSize',fsizelegend)
     
-%     xline(mean(broadness),'-',{'Avarage'},'FontSize',fsize,'LineWidth',lwidth);
-%     xline(median(broadness),'-',{'Median'},'FontSize',fsize,'LineWidth',lwidth);
-
-    xline(mean(broadness),'--k','LineWidth',lwidth);
-    xline(median(broadness),'-r','LineWidth',lwidth);
-    legend('Data',['Average =',num2str(mean(broadness))], ['Median =',num2str(median(broadness))],'FontSize',fsizelegend)
-    
-    figure(13); %нарисуем гистограмму
-    subplot(nx,ny,n);
-    histogram(elongatedness,nbins,"Normalization","probability","EdgeColor","none");
-    title([Name{1,n}],'FontSize',fsize);
-    xlabel('elongatedness, mm','FontSize',fsize);
-    ylabel('count','FontSize',fsize);
-    xlim([0 4]);
-    ylim([0 0.16]);
-    grid on
-%     xline(mean(elongatedness),'-',{'Avarage'},'FontSize',fsize,'LineWidth',lwidth);
-%     xline(median(elongatedness),'-',{'Median'},'FontSize',fsize,'LineWidth',lwidth);
-
-    xline(mean(elongatedness),'--k','LineWidth',lwidth);
-    xline(median(elongatedness),'-r','LineWidth',lwidth);
-    legend('Data',['Average =',num2str(mean(elongatedness))], ['Median =',num2str(median(elongatedness))],'FontSize',fsizelegend)
+%     figure(13); %нарисуем гистограмму
+%     subplot(nx,ny,n);
+%     histogram(elongatedness,nbins,"Normalization","probability","EdgeColor","none");
+%     title([Name{1,n}],'FontSize',fsize);
+%     xlabel('elongatedness, mm','FontSize',fsize);
+%     ylabel('count','FontSize',fsize);
+%     xlim([0 4]);
+%     ylim([0 0.16]);
+%     grid on
+%     xline(mean(elongatedness),'--k','LineWidth',lwidth);
+%     xline(median(elongatedness),'-r','LineWidth',lwidth);
+%     legend('Data',['Average =',num2str(mean(elongatedness))], ['Median =',num2str(median(elongatedness))],'FontSize',fsizelegend)
 
 
-    %Orientation
-    figure(14);
-    subplot(nx,ny,n);
-    h = histogram(angles,nbins,"Normalization","probability","EdgeColor","none");
-    polarplot(h.BinEdges([1:end-2,end]),h.Values,'LineWidth',lwidth);
-    title([Name{1,n}],'FontSize',fsize);
-    thetalim([-90; 90]);
-    rticks([0]);
-    thetaticks([-90,-45,0,45, 90]);
-    thetaticklabels({'-90';'-45';'0'; '45'; '90'});
-    grid on
+    %Orientation - angles
+%     figure(14);
+%     subplot(nx,ny,n);
+%     h = histogram(angles,nbins,"Normalization","probability","EdgeColor","none");
+%     polarplot(h.BinEdges([1:end-2,end]),h.Values,'LineWidth',lwidth);
+%     title([Name{1,n}],'FontSize',fsize);
+%     thetalim([-90; 90]);
+%     rticks([0]);
+%     thetaticks([-90,-45,0,45, 90]);
+%     thetaticklabels({'-90';'-45';'0'; '45'; '90'});
+%     grid on
    
 
     %Orientation histogram
     figure(104);
     subplot(nx,ny,n);
-    histogram(angles,nbins,"Normalization","probability","EdgeColor","none");
+    h = histogram(angles,nbins,"Normalization","probability","EdgeColor","none");
+    corientation(:,n) = (h.Values)';
     title([Name{1,n}],'FontSize',fsize);
     xlabel('orientation, rad','FontSize',fsize);
     ylabel('count','FontSize',fsize);
@@ -170,7 +173,8 @@ for n=1:nfiles
     %straightness
     figure(15);
     subplot(nx,ny,n);
-    histogram(straightness,nbins,"Normalization","probability","EdgeColor","none");
+    h = histogram(straightness,nbins,"Normalization","probability","EdgeColor","none");
+    cstraightness(:,n) = (h.Values)';
     title([Name{1,n}],'FontSize',fsize);
     xlabel('straightness','FontSize',fsize);
     ylabel('count','FontSize',fsize);
@@ -184,7 +188,8 @@ for n=1:nfiles
     %nbsnb
     figure(16);
     subplot(nx,ny,n);
-    histogram(nbsnb/M,nbins,"Normalization","probability","EdgeColor","none");
+    h = histogram(nbsnb,nbins,"Normalization","probability","EdgeColor","none");
+    cnbsnb(:,n) = (h.Values)';
     title([Name{1,n}],'FontSize',fsize);
     xlabel('NBS-NB','FontSize',fsize);
     ylabel('count','FontSize',fsize);
@@ -198,7 +203,8 @@ for n=1:nfiles
     %nbsso
     figure(17);
     subplot(nx,ny,n);
-    histogram(nbsso/M,nbins,"Normalization","probability","EdgeColor","none");
+    h = histogram(nbsso,nbins,"Normalization","probability","EdgeColor","none");
+    cnbsso(:,n) = (h.Values)';
     title([Name{1,n}],'FontSize',fsize);
     xlabel('NBS-SO','FontSize',fsize);
     ylabel('count','FontSize',fsize);
@@ -212,7 +218,8 @@ for n=1:nfiles
     %osdnb
     figure(18);
     subplot(nx,ny,n);
-    histogram(osdnb,nbins,"Normalization","probability","EdgeColor","none");
+    h = histogram(osdnb,nbins,"Normalization","probability","EdgeColor","none");
+    cosdnb(:,n) = (h.Values)';
     title([Name{1,n}],'FontSize',fsize);
     xlabel('OSD-NB','FontSize',fsize);
     ylabel('count','FontSize',fsize);
@@ -223,32 +230,57 @@ for n=1:nfiles
     xline(median(osdnb),'-r','LineWidth',lwidth);
     legend('Data',['Average =',num2str(mean(osdnb))], ['Median =',num2str(median(osdnb))],'FontSize',fsizelegend)
 
-    %BH
-    figure(19);
-    subplot(nx,ny,n);
-    histogram(BH,nbins,"Normalization","probability","EdgeColor","none");
-    title([Name{1,n}],'FontSize',fsize);
-    xlabel('BH','FontSize',fsize);
-    ylabel('count','FontSize',fsize);
-%     xlim([0 1.2]);
-%     ylim([0 400]);
-    grid on
-    xline(mean(BH),'--k','LineWidth',lwidth);
-    xline(median(BH),'-r','LineWidth',lwidth);
-    legend('Data',['Average =',num2str(mean(BH))], ['Median =',num2str(median(BH))],'FontSize',fsizelegend)
+    %BH - useless
+%     figure(19);
+%     subplot(nx,ny,n);
+%     histogram(BH,nbins,"Normalization","probability","EdgeColor","none");
+%     title([Name{1,n}],'FontSize',fsize);
+%     xlabel('BH','FontSize',fsize);
+%     ylabel('count','FontSize',fsize);
+%     grid on
+%     xline(mean(BH),'--k','LineWidth',lwidth);
+%     xline(median(BH),'-r','LineWidth',lwidth);
+%     legend('Data',['Average =',num2str(mean(BH))], ['Median =',num2str(median(BH))],'FontSize',fsizelegend)
 
     %Elongatedness - Straightness plot
     figure(20);
     hold on
-    scatter(mean(elongatedness),mean(straightness),'DisplayName',Name{1,n});
-    title('Elongatedness vs Straightness','FontSize',fsize);
-    xlabel('elongatedness','FontSize',fsize);
+    scatter(mean(nbsso),mean(straightness),'DisplayName',Name{1,n},'Marker',markers{n});
+    title('NBS-SO vs Straightness','FontSize',fsize);
+    xlabel('NBS-SO','FontSize',fsize);
     ylabel('straightness','FontSize',fsize);
-%     xlim([0 1.2]);
-%     ylim([0 400]);
     grid on
-    %xline(mean(BH),'--k','LineWidth',lwidth);
-    %xline(median(BH),'-r','LineWidth',lwidth);
-    legend;
-
+    legend;   
 end
+
+%plot correlation heatmaps
+figure(21);
+cdata = corrcoef(clength);
+h = heatmap(Name,Name,cdata);
+h.Title = 'length histogram correlation';
+
+figure(22);
+cdata = corrcoef(cstraightness);
+h = heatmap(Name,Name,cdata);
+h.Title = 'straightness histogram correlation';
+
+figure(23);
+cdata = corrcoef(corientation);
+h = heatmap(Name,Name,cdata);
+h.Title = 'orientation histogram correlation';
+
+figure(24);
+cdata = corrcoef(cnbsnb);
+h = heatmap(Name,Name,cdata);
+h.Title = 'NBS-NB histogram correlation';
+
+figure(25);
+cdata = corrcoef(cnbsso);
+h = heatmap(Name,Name,cdata);
+h.Title = 'NBS-SO histogram correlation';
+
+figure(26);
+cdata = corrcoef(cosdnb);
+h = heatmap(Name,Name,cdata);
+h.Title = 'OSD-NB histogram correlation';
+
